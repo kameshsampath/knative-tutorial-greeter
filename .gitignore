@@ -29,8 +29,3 @@ work/**/*
 
 docker-build.yaml
 
-src/**
-pom.xml
-mvnw
-mvnw.cmd
-.mvn
