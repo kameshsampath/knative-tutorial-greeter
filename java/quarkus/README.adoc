@@ -1,1 +1,56 @@
 =  Quarkus Greeter
+
+The Greeter application  based on https://quarkus.io[QuarkusIO], that can be deployed as Knative service
+
+== Build the image 
+
+[source,bash]
+----
+mvn -Dcontainer.registry.url='https://index.docker.io' \ #<1>
+    -Dcontainer.registry.user='<your docker hub user>' \ #<2>
+    -Dcontainer.registry.password='<your docker hub password>' \#<3>
+    -Dgit.source.revision='master' \#<4>
+    -Dgit.source.repo.url='https://github.com/redhat-devloper-demos/knative-tutorial-greeter.git' \#<5>
+    -Dapp.container.image='docker.io/<your-repo>/quarkus-greeter' \#<6>
+    clean process-resources
+----
+<1> Container registry URL
+<2> The Container registry authentication user
+<3> The Container registry authentication password
+<4> The GitHub source revision
+<5> The GitHub source repository
+<6> The destination name, the fully qualified name of the container that gets pushed
+
+=== Deploy Knative resources
+
+[source,bash]
+----
+kubectl apply -f target/knative
+----
+
+[NOTE]
+====
+* Build and deploy will take time at least for the first build as it warms the .m2 cache
+====
+
+=== Accessing the application
+
+Verify the deployment using:
+
+[source,bash]
+----
+kubectl get pods -w 
+----
+
+Once you see the Knative deployment, then you can access the application in the same way as you do for other Knative services.
+
+e.g. if you are on minikube
+
+
+[source,bash]
+----
+IP_ADDRESS=$(minikube ip):31380 #<1>
+curl -v -H "Host: quarkus-greeter.example.com" $IP_ADDRESS
+----
+
+<1> the istio-ingressgateway NodePort 

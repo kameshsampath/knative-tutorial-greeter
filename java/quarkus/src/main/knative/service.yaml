@@ -24,13 +24,22 @@ spec:
                   value: ${app.container.image}
               image: quay.io/rhdevelopers/quarkus-java-builder
               name: docker-push
+              # needed for buildah builds to be running as containers
+              securityContext:
+                capabilities:
+                  add: ['SYS_ADMIN']
               volumeMounts:
                 - mountPath: /root/.m2
                   name: m2-cache
+                # needed for buildah to store its built containers
+                - mountPath: /var/lib/containers
+                  name: buildah-cache
               workingDir: /workspace/java/quarkus
           timeout: 60m
           volumes:
             - name: m2-cache
+              emptyDir: {}
+            - name: buildah-cache
               emptyDir: {}
       revisionTemplate:
         metadata:
