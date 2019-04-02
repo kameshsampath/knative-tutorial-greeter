@@ -3,7 +3,8 @@
 # it also allows building images with https://buildah.io
 
 FROM quay.io/rhdevelopers/quarkus-java-builder as nativebuilder
-
+COPY . /project
+WORKDIR /project
 # uncomment this to set the MAVEN_MIRROR_URL of your choice, to make faster builds
 # ARG MAVEN_MIRROR_URL=<your-maven-mirror-url>
 # e.g.
@@ -12,7 +13,7 @@ FROM quay.io/rhdevelopers/quarkus-java-builder as nativebuilder
 RUN /usr/local/bin/entrypoint-run.sh mvn -DskipTests clean package -Pnative
 
 FROM registry.fedoraproject.org
-COPY --from=nativebuilder /workspace/java/quarkus/target/*-runner /application
+COPY --from=nativebuilder /project/target/*-runner /application
 EXPOSE 8080
 ENTRYPOINT ["/application"]
 CMD ["-Dquarkus.http.host=0.0.0.0"]
