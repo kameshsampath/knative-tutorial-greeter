@@ -12,7 +12,7 @@ WORKDIR /project
 
 RUN /usr/local/bin/entrypoint-run.sh mvn -DskipTests clean package -Pnative
 
-FROM registry.fedoraproject.org
+FROM registry.fedoraproject.org/fedora-minimal
 COPY --from=nativebuilder /project/target/*-runner /application
 EXPOSE 8080
 ENTRYPOINT ["/application"]
