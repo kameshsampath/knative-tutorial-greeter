@@ -1,0 +1,34 @@
+# Docker image
+# Build a Docker image to deploy, run, or push to a container registry.
+# Add steps that use Docker Compose, tag images, push to a registry, run an image, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+variables:
+  baseImageName: 'quay.io/rhdevelopers/knative-tutorial-greeter'
+  quarkusImageName: "$(baseImageName):quarkus"
+  sbImageName: "$(baseImageName):sb"
+
+steps:
+- script: docker login -u ${dockerUserID} -p ${dockerUserPassword} https://quay.io
+  displayName: 'Login into Container Registry'
+
+- script: cd java/quarkus && docker build -f Dockerfile.all -t $(quarkusImageName) . && cd ../..
+  displayName: 'Build Quarkus Docker Image'
+
+- script: docker tag $(quarkusImageName) "$(baseImageName):latest"
+  displayName: 'Tag latest'
+
+- script: docker push $(quarkusImageName) && docker push "$(baseImageName):latest"
+  displayName: 'Push Quarkus Images to Registry'
+
+- script: cd java/springboot && docker build -f Dockerfile.all -t $(sbImageName) . && cd ../..
+  displayName: 'Build SpringBoot Docker Image'
+
+- script: docker push $(sbImageName)
+  displayName: 'Push SpringBoot Images to Registry'
