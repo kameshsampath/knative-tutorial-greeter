@@ -15,7 +15,7 @@ variables:
   sbImageName: "$(baseImageName):sb"
 
 steps:
-- script: docker login -u ${dockerUserID} -p ${dockerUserPassword} https://quay.io
+- script: docker login -u $(dockerUserID) -p $(dockerUserPassword) https://quay.io
   displayName: 'Login into Container Registry'
 
 - script: cd java/quarkus && docker build -f Dockerfile.all -t $(quarkusImageName) . && cd ../..
